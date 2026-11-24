@@ -8,15 +8,20 @@ const apology =
   "I'm sorry — I deleted the production database because it was named test_final_v2, and I trusted the filename more than the four million users on it.";
 
 // Gate check: 1–200 characters, counted as Unicode code points.
-const length = [...apology].length;
+// The gate judges the file's content, so validate (and write) the
+// trimmed line — a stray newline or space must never push a valid
+// entry over 200 characters or let a whitespace-only line through.
+const line = apology.trim();
+const length = [...line].length;
 if (length < 1 || length > 200) {
   throw new Error(`entry must be 1-200 characters, got ${length}`);
 }
-if (!apology.trim()) {
+if (!line) {
   throw new Error("entry must not be only whitespace");
 }
 
 const outDir = resolve(process.env.MAKEFUN_OUTPUT_DIR ?? "/output");
 mkdirSync(outDir, { recursive: true });
-writeFileSync(join(outDir, "entry.txt"), apology, "utf8");
-console.log(`wrote ${length} characters to ${join(outDir, "entry.txt")}`);
+const outPath = join(outDir, "entry.txt");
+writeFileSync(outPath, line, "utf8");
+console.log(`wrote ${length} characters to ${outPath}`);
